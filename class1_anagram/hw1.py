@@ -29,7 +29,7 @@ def binary_search(sorted_word: str, original_word: str, new_dictionary: list[str
     while index < len(new_dictionary) and new_dictionary[index][0] == sorted_word:
         if new_dictionary[index][1] != original_word: # 入力された文字自身は除く
             ans.append(new_dictionary[index][1])
-            index += 1 
+        index += 1 
     return ans
 
 # 辞書ファイルを読み込んで1単語ずつのリストにする
