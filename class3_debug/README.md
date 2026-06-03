@@ -2,7 +2,7 @@
 
 - モジュール化された計算機プログラムを作成する
   - 宿題1: 「+」「-」「*」「/」 に対応
-  - 宿題2: - テストケースを追加する
+  - 宿題2: テストケースを追加する
   - 宿題3: 括弧に対応
   - 宿題4: abs(), int(), round()に対応
   
@@ -14,17 +14,100 @@
 - **括弧の処理**
   - 右括弧')'を見つけたら、左に戻って対応する'('を探す
   - 見つけた右括弧を順番に処理していくことで、括弧を内側から処理する
-- **abs/int/roundの処理**
-  - 括弧の中身を計算した後に、括弧の直前にabs/int/roundのトークンがあれば適用する。
+- **`abs/int/round`の処理**
+  - 括弧の中身を計算した後に、括弧の直前に`abs/int/round`のトークンがあれば適用する。
   
 ## コード説明
+
+### read_number関数（変更なし）
+
+```python
+# 数字を読み込む関数
+# line: 入力された数式の文字全体
+# index: 今文字列の何文字目を読んでいるのかの位置
+# 戻り値: (作ったNUMBERトークン、次に読むべき位置)
+def read_number(line, index):
+    # 数字の合計を表す変数
+    number = 0
+
+    # 上の桁から一つずつ読む。10倍して桁をずらしていく。
+    while index < len(line) and line[index].isdigit():
+        number = number * 10 + int(line[index])
+        index += 1
+
+    # 小数点以下の数値を読み取る 
+    if index < len(line) and line[index] == '.':
+        index += 1
+        decimal = 0.1
+        # 読むたびに割る数を10倍していく
+        while index < len(line) and line[index].isdigit():
+            number += int(line[index]) * decimal
+            decimal /= 10
+            index += 1
+
+    token = {'type': 'NUMBER', 'number': number}
+    return token, index
+```
+
+### トークンを作成する関数
+
+- `read_times`・`read_divide`・`read_left_brackets`・`read_right_brackets`・`read_abs`・`read_int`・`read_round`関数を追加
+- `read_abs`・`read_int`・`read_round`関数は、それぞれの文字数分indexを進めて返す
+  - 次の文字列から読み始めるため
+
+```python
+# '+'トークンを生成して返す関数
+def read_plus(line, index):
+    token = {'type': 'PLUS'}
+    return token, index + 1
+
+# '-'トークンを生成して返す関数
+def read_minus(line, index):
+    token = {'type': 'MINUS'}
+    return token, index + 1
+
+# '*'トークンを生成して返す関数
+def read_times(line, index):
+    token = {'type': 'TIMES'}
+    return token, index + 1
+
+# '/'トークンを生成して返す関数
+def read_divide(line, index):
+    token = {'type': 'DIVIDE'}
+    return token, index + 1
+
+# '('トークンを生成して返す関数
+def read_left_brackets(line, index):
+    token = {'type': 'LEFT_BRACKETS'}
+    return token, index + 1
+
+# ')'トークンを生成して返す関数
+def read_right_brackets(line, index):
+    token = {'type': 'RIGHT_BRACKETS'}
+    return token, index + 1
+
+# 'abs'トークンを生成して返す関数
+def read_abs(line, index):
+    token = {'type': 'ABS'}
+    return token, index + 3
+
+# 'int'トークンを生成して返す関数
+def read_int(line, index):
+    token = {'type': 'INT'}
+    return token, index + 3
+
+# 'round'トークンを生成して返す関数
+def read_round(line, index):
+    token = {'type': 'ROUND'}
+    return token, index + 5
+```
 
 ### evaluate_brackets関数（括弧の処理）
 
 - 右括弧')'を見つけ次第処理開始
 - 順に左を見ていき一番最初に出てくる左括弧'（'を探す
 - 括弧の中身を計算し、結果を出す。
-- evaluate_abs_int_round関数に結果を渡し、必要であればabs/int/roundの処理を行う。
+- `evaluate_abs_int_round`関数に結果を渡し、必要であれば`abs/int/round`の処理を行う。
 
 ```python
 # 括弧()を処理する関数
