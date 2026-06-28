@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     malloc_challenge_with_trace.bin
-relocations:     []
-...
